@@ -1,17 +1,58 @@
-import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import axios from "axios";
+import { ILoginForm } from "../types";
+import { useState } from "react";
 
 const Login = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ILoginForm>();
+  const navigate = useNavigate();
+  const [mes, setmes] = useState(null);
+
+  const onFormSubmit = (data: ILoginForm) => {
+    const { email, password } = data;
+
+    axios
+      .post("http://localhost:3333/user/login", { email, password })
+      .then((res) => {
+        if (res.data.status === 200) {
+          navigate("/signup");
+        } else {
+          setmes((x) => res.data.message);
+        }
+      })
+      .catch((errors) => {
+        setmes((x) => errors?.response?.data?.message);
+      });
+  };
+  const onErrors = (data: any) => {
+    // console.log(data);
+  };
+
   return (
     <Wrapper>
       <LoginWrapper>
         <Logo>FIND CAT ⭐️</Logo>
-        <LoginForm>
-          <input type="text" placeholder="Email" />
-          <input type="password" placeholder="Password" />
+        <LoginForm onSubmit={handleSubmit(onFormSubmit, onErrors)}>
+          <input
+            {...register("email", { required: true })}
+            type="email"
+            placeholder="Email"
+          />
+          <input
+            {...register("password", { required: true })}
+            type="password"
+            placeholder="Password"
+          />
+          {mes}
           <button>로그인</button>
         </LoginForm>
-        <SignUpBtn>이메일 회원가입</SignUpBtn>
+        <SignUpBtn to="/signup">이메일 회원가입</SignUpBtn>
         <FindPs to="/">아이디&#47;비밀번호 찾기 &#62;</FindPs>
         <KakaoLogin>카카오톡</KakaoLogin>
         <NaverLogin>네이버</NaverLogin>
@@ -58,8 +99,8 @@ const LoginForm = styled.form`
     background-color: inherit;
   }
   button {
-    margin: 1rem 0;
-    padding: 0.7rem;
+    margin: 0.6rem 0;
+    padding: 0.6rem 0.7rem;
     background-color: #f0e464;
     color: #0d1f2b;
     border: none;
@@ -69,21 +110,23 @@ const LoginForm = styled.form`
   }
 `;
 
-const SignUpBtn = styled.button`
+const SignUpBtn = styled(Link)`
   /* margin: 0.1rem 0; */
   padding: 0.7rem;
   background-color: white;
   color: #0d1f2b;
   border: none;
   border-radius: 20px;
-  font-weight: 700;
+  font-size: 0.87rem;
+  font-weight: 600;
+  text-align: center;
   cursor: pointer;
 `;
 
 const FindPs = styled(Link)`
   margin-top: 1rem;
   color: #ffffffba;
-  font-size: 0.7rem;
+  font-size: 0.3rem;
   text-align: center;
   text-decoration: underline;
 `;
@@ -120,7 +163,7 @@ const NaverLogin = styled.div`
 
   :hover {
     background-color: #2db400;
-    color: black;
+    color: white;
     border: 1px solid #2db400;
   }
 `;
