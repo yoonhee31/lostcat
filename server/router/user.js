@@ -24,6 +24,7 @@ router.post("/login", (req, res, next) => {
   const { email, password } = req.body;
   const isValidEmail = users.find((user) => user.email === email);
   const isValidPassword = users.find((user) => user.password === password);
+  console.log(email, password);
   if (!isValidEmail) {
     return res
       .status(401)
@@ -34,8 +35,7 @@ router.post("/login", (req, res, next) => {
       .status(401)
       .json({ message: "이메일 또는 비밀번호가 맞지 않습니다." });
   }
-  req.session.save(email);
-  res.status(200).json({ message: "로그인성공" });
+  res.status(200).json({ message: "로그인성공", status: 200 });
 });
 
 export default router;
