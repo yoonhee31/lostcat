@@ -12,7 +12,7 @@ const Login = () => {
     formState: { errors },
   } = useForm<ILoginForm>();
   const navigate = useNavigate();
-  const [mes, setmes] = useState(null);
+  const [isInvalid, setIsInvalid] = useState("");
 
   const onFormSubmit = (data: ILoginForm) => {
     const { email, password } = data;
@@ -23,11 +23,11 @@ const Login = () => {
         if (res.data.status === 200) {
           navigate("/signup");
         } else {
-          setmes((x) => res.data.message);
+          setIsInvalid((message) => res.data.message);
         }
       })
       .catch((errors) => {
-        setmes((x) => errors?.response?.data?.message);
+        setIsInvalid((message) => errors.response.data.message);
       });
   };
   const onErrors = (data: any) => {
@@ -49,7 +49,7 @@ const Login = () => {
             type="password"
             placeholder="Password"
           />
-          {mes}
+          <IsInvalid>{isInvalid}</IsInvalid>
           <button>로그인</button>
         </LoginForm>
         <SignUpBtn to="/signup">이메일 회원가입</SignUpBtn>
@@ -67,7 +67,7 @@ export default Login;
 const Wrapper = styled.section`
   height: 100vh;
   width: 100vw;
-  background-color: #0d1f2b;
+  background-color: ${(props) => props.theme.navy};
 `;
 
 const LoginWrapper = styled.div`
@@ -95,19 +95,26 @@ const LoginForm = styled.form`
     padding: 0.5rem;
     border: none;
     border-bottom: 0.5px solid white;
-    color: #f0e464;
+    color: ${(props) => props.theme.yellow};
     background-color: inherit;
   }
   button {
     margin: 0.6rem 0;
     padding: 0.6rem 0.7rem;
-    background-color: #f0e464;
+    background-color: ${(props) => props.theme.yellow};
     color: #0d1f2b;
     border: none;
     border-radius: 20px;
     font-weight: 700;
     cursor: pointer;
   }
+`;
+
+const IsInvalid = styled.div`
+  margin: 0.4rem 0;
+  color: #ff4646;
+  font-size: 0.3rem;
+  text-align: center;
 `;
 
 const SignUpBtn = styled(Link)`
