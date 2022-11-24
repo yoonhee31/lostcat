@@ -1,3 +1,5 @@
+import axios from "axios";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import { ISignupForm } from "../types";
@@ -11,6 +13,16 @@ const Signup = () => {
     watch,
   } = useForm<ISignupForm>({ mode: "onChange" });
 
+  // useEffect(() => {
+  //   const email = watch().email;
+  //   const isEmailValid = errors.email?.message;
+  //   if (!isEmailValid) {
+  //     console.log("사용 할 수 있는 이메일입니다.");
+  //   } else {
+  //     console.log("사용 할 수 없는 이메일입니다.");
+  //   }
+  // }, [watch().email]);
+
   const checkPassword = () => {
     if (watch().password !== watch().password2) {
       return "비밀번호가 일치하지 않습니다.";
@@ -18,9 +30,16 @@ const Signup = () => {
   };
 
   const createAccount = (data: ISignupForm) => {
-    console.log(data);
+    const { email, password, name } = data;
+    axios
+      .post("http://localhost:3333/user/signup", { email, password, name })
+      .then((res) => {
+        if (res.data.status === 201) {
+          return console.log("create!");
+        }
+      });
   };
-  const checkEmailOverlap = () => {};
+
   return (
     <SignupWrapper>
       <SignupForm onSubmit={handleSubmit(createAccount)}>
@@ -38,7 +57,7 @@ const Signup = () => {
               })}
               placeholder="이메일 주소"
             />
-            <button onClick={checkEmailOverlap}>중복확인</button>
+            {/* <button onClick={checkEmailOverlap}>중복확인</button> */}
           </div>
         </Email>
         <ErrorMessage>{errors.email?.message}</ErrorMessage>
@@ -117,6 +136,7 @@ const Email = styled.div`
   }
   input {
     padding: 0.5rem;
+    width: 100%;
     border: none;
     border-bottom: 1px solid white;
     color: ${(props) => props.theme.yellow};
@@ -126,7 +146,7 @@ const Email = styled.div`
       font-size: 0.75rem;
     }
   }
-  button {
+  /* button {
     width: 80px;
     margin: 0.3rem 0;
     padding: 0.3rem 0.7rem;
@@ -136,7 +156,7 @@ const Email = styled.div`
     border-radius: 20px;
     font-size: 0.7rem;
     cursor: pointer;
-  }
+  } */
 `;
 
 const Password = styled(Email)``;
