@@ -20,6 +20,25 @@ let users = [
 
 const router = express.Router();
 
+router.post("signup", (req, res, next) => {
+  const { email, password, name } = req.body;
+  const isValidEmail = users.find((user) => user.email === email);
+  if (isValidEmail) {
+    return res
+      .status(409)
+      .json({ status: 409, message: "이미 가입된 계정입니다 " });
+  }
+  const createuser = {
+    id: Date.now().toString(),
+    createAt: new Date(),
+    email,
+    password,
+    name,
+  };
+  users = [createuser, ...users];
+  res.status(201).json({ status: 201, message: `안녕하세요 ${name}님` });
+});
+
 router.post("/login", (req, res, next) => {
   const { email, password } = req.body;
   const isValidEmail = users.find((user) => user.email === email);
